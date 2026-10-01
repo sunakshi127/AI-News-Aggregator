@@ -11,7 +11,7 @@ function App() {
   const [email, setEmail] = useState("");
   const [subscribeMsg, setSubscribeMsg] = useState("");
   const [subscribing, setSubscribing] = useState(false);
-  const API_URL = "https://ai-news-aggregator-2-calg.onrender.com/" 
+  const API_URL = "https://ai-news-aggregator-2-calg.onrender.com" 
 
   // ================================
   // FETCH NEWS FROM FASTAPI
