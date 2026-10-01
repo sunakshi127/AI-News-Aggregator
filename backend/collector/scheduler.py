@@ -71,7 +71,7 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(
     collect_news,
     "interval",
-    minutes=10,
+    hours=7,
     id="news_collection_job",
     replace_existing=True
 )
