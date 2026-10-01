@@ -11,7 +11,7 @@ function App() {
   const [email, setEmail] = useState("");
   const [subscribeMsg, setSubscribeMsg] = useState("");
   const [subscribing, setSubscribing] = useState(false);
-
+  const API_URL = "https://ai-news-aggregator-2-calg.onrender.com/" 
 
   // ================================
   // FETCH NEWS FROM FASTAPI
@@ -20,7 +20,7 @@ function App() {
   useEffect(() => {
     console.log("Fetching news from..");
 
-    fetch("http://127.0.0.1:8000/news")
+    fetch(`${API_URL}/news`)
       .then((response) => {
         console.log("Response status:", response.status);
 
@@ -54,7 +54,7 @@ const handleSubscribe = () => {
   setSubscribing(true);
   setSubscribeMsg("");
 
-  fetch("http://127.0.0.1:8000/subscribe", {
+  fetch(`${API_URL}/subscribe`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email: email.trim() }),
