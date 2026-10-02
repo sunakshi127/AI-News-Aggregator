@@ -1,22 +1,18 @@
-import json
+from collector.mangodb import db
 
-FILE_PATH = "mailer/subscribers.json"
+subscribers_collection = db["subscribers"]
 
 
 def get_subscribers():
-    with open(FILE_PATH, "r") as f:
-        return json.load(f)
+    docs = subscribers_collection.find({}, {"_id": 0, "email": 1})
+    return [doc["email"] for doc in docs]
 
 
 def add_subscriber(email):
-    subscribers = get_subscribers()
+    existing = subscribers_collection.find_one({"email": email})
 
-    if email not in subscribers:
-        subscribers.append(email)
+    if existing:
+        return False
 
-        with open(FILE_PATH, "w") as f:
-            json.dump(subscribers, f)
-
-        return True
-
-    return False
+    subscribers_collection.insert_one({"email": email})
+    return True
