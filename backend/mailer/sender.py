@@ -1,13 +1,12 @@
 import os
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+import requests
 from dotenv import load_dotenv
 
-load_dotenv(r"C:\AI news aggregator\.env")
+load_dotenv()
 
-EMAIL = os.getenv("EMAIL_ADDRESS")
-PASSWORD = os.getenv("EMAIL_PASSWORD")
+BREVO_API_KEY = os.getenv("BREVO_API_KEY")
+SENDER_EMAIL = "sunakshi1207@gmail.com"
+SENDER_NAME = "AI News Aggregator"
 
 
 def build_email_html(news):
@@ -27,21 +26,32 @@ def build_email_html(news):
 
 
 def send_news_email(to_email, news):
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = "Your Daily AI News Digest"
-    msg["From"] = EMAIL
-    msg["To"] = to_email
-
     html_content = build_email_html(news)
-    msg.attach(MIMEText(html_content, "html"))
+
+    url = "https://api.brevo.com/v3/smtp/email"
+
+    headers = {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY,
+        "content-type": "application/json",
+    }
+
+    payload = {
+        "sender": {"name": SENDER_NAME, "email": SENDER_EMAIL},
+        "to": [{"email": to_email}],
+        "subject": "Your Daily AI News Digest",
+        "htmlContent": html_content,
+    }
 
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(EMAIL, PASSWORD)
-            server.send_message(msg)
+        response = requests.post(url, headers=headers, json=payload, timeout=15)
 
-        print("Email sent to:", to_email)
-        return True
+        if response.status_code in (200, 201):
+            print("Email sent to:", to_email)
+            return True
+        else:
+            print("EMAIL ERROR:", response.status_code, response.text)
+            return False
 
     except Exception as e:
         print("EMAIL ERROR:", repr(e))
